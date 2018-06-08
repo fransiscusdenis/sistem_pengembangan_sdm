@@ -1,0 +1,39 @@
+#unit-table_filter {
+  float: right;
+}
+
+#unit-table_paginate {
+  float: right;
+}
+
+#unit-table-riwayatpendidikan_filter {
+  float: right;
+}
+
+#unit-table-riwayatpendidikan_paginate {
+  float: right;
+}
+
+#unit-table-riwayatpangkat_filter {
+  float: right;
+}
+
+#unit-table-riwayatpangkat_paginate {
+  float: right;
+}
+
+#unit-table-riwayatjabatan_filter {
+  float: right;
+}
+
+#unit-table-riwayatjabatan_paginate {
+  float: right;
+}
+
+ul.pagination {
+  margin: 0px;
+}
+
+dl.dl-horizontal {
+  margin-bottom: 0px;
+}
