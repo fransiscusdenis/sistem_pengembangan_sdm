@@ -94,7 +94,7 @@ class PegawaiController extends Controller
 
       $pegawai = Pegawai::create($data);
 
-      return response()->json('Berhasil Menambahkan Data!');
+      return response()->json(['pegawai' => $pegawai, 'message' => 'Berhasil Menambahkan Data!']);
     }
 
     /**
@@ -139,7 +139,7 @@ class PegawaiController extends Controller
       $pegawai->provinsi = $request['provinsi'];
       $pegawai->jenis_kelamin_id = $request['jenis_kelamin_id'];
       $pegawai->agama_id = $request['agama_id'];
-      $pegawai->perkawinan_id = $request['perkawinan_id'];
+      $pegawai->status_perkawinan_id = $request['status_perkawinan_id'];
       $pegawai->status_pegawai_id = $request['status_pegawai_id'];
       $pegawai->status_hukum_id = $request['status_hukum_id'];
       $pegawai->unit_id = $request['unit_id'];
@@ -222,8 +222,8 @@ class PegawaiController extends Controller
         $datatables = Datatables::of($riwayatpangkat);
 
         $datatables->addColumn('action', function($riwayatpangkat){
-          return '<a onclick="editForm('. $riwayatpangkat->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-          '<a onclick="deleteData('. $riwayatpangkat->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+          return '<a onclick="editFormRiwayatPangkat('. $riwayatpangkat->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+          '<a onclick="deleteDataRiwayatPangkat('. $riwayatpangkat->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
         });
         return $datatables->make(true);
     }
@@ -251,6 +251,12 @@ class PegawaiController extends Controller
 
     public function viewPegawai($id)
     {
+      $jeniskelamin = JenisKelamin::all();
+      $agama = Agama::all();
+      $statusperkawinan = StatusPerkawinan::all();
+      $statushukum = StatusHukum::all();
+      $statuspegawai = StatusPegawai::all();
+      $unit = Unit::all();
       $riwayatpendidikan = RiwayatPendidikan::all();
       $jenjang = Jenjang::all();
       $riwayatjabatan = RiwayatJabatan::all();
@@ -274,9 +280,15 @@ class PegawaiController extends Controller
       return view('pegawai.view', [
         'label'=> 'DataPegawai',
         'riwayatpendidikan' => $riwayatpendidikan,
-        'jenjang'=> $jenjang,
+        'jenjang' => $jenjang,
+        'agama' => $agama,
+        'statuspegawai' => $statuspegawai,
+        'statusperkawinan' => $statusperkawinan,
+        'statushukum' => $statushukum,
+        'unit' => $unit,
         'riwayatjabatan' => $riwayatjabatan,
         'jabatan' => $jabatan,
+        'jeniskelamin' => $jeniskelamin,
         'jenisjabatan' => $jenisjabatan,
         'pangkat' => $pangkat,
         'pegawai'=> $pegawai,

@@ -46,8 +46,8 @@
                           <th>NIP</th>
                           <th>Nama</th>
                           <th>Pangkat</th>
-                          <th>Jabatan</th>
                           <th>Jenis Jabatan</th>
+                          <th>Jabatan</th>
                           <th>TMT Jabatan</th>
                           <th width="140px" style="text-align: center;">Action</th>
                       </tr>
@@ -97,8 +97,8 @@
                     {data: 'nip', name: 'nip'},
                     {data: 'nama', name: 'nama'},
                     {data: 'nama_pangkat', name: 'nama_pangkat'},
-                    {data: 'jabatan', name: 'jabatan'},
                     {data: 'jenis_jabatan', name: 'jenis_jabatan'},
+                    {data: 'jabatan', name: 'jabatan'},
                     {data: 'tmt_jabatan', name: 'tmt_jabatan'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                   ],

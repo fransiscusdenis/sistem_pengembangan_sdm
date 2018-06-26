@@ -66,8 +66,8 @@
               <dd>{{ $pegawai[0]->tmt_pensiun }}</dd>
             </dl>
 
-            <h3 class="box-title" style="margin-left: 1.3%; margin-bottom: 0.5%; margin-top: 0.7%;">
-              <a onclick="editForm('. $pegawai->id .')" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Edit Data Pegawai</a>
+            <h3 class="box-title" style="margin-left: 1.3%; margin-bottom: 0.9%; margin-top: 0.9%;">
+              <a onclick="editFormPegawai({{ $id }})" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Edit Data Pegawai</a>
             </h3>
           </div>
 
@@ -136,7 +136,7 @@
         <div class="box box-success">
           <div class="box-header">
             <h3 class="box-title">
-              <a class="btn btn-success" href="#"><i class="fa fa-plus"></i> Tambah Data</a>
+              <a class="btn btn-success" onclick="addFormRiwayatPangkat()"><i class="fa fa-plus"></i> Tambah Data</a>
             </h3>
             {{-- <div class="box-tools">
               <div class="input-group input-group-sm" style="width: 200px;">
@@ -241,8 +241,9 @@
       </div>
     </div>
 
-
+    @include('pegawai.form')
     @include('pegawai.formpendidikan')
+    @include('pegawai.formriwayatpangkat')
   </section>
 </div>
 
@@ -262,6 +263,70 @@
 <script src="{{ asset('assets/bootstrap/js/ie10-viewport-bug-workaround.js') }}"></script>
 
 <script>
+    //Data Pegawai
+    function editFormPegawai(id) {
+      save_method = 'edit';
+      $('input[name=_method]').val('PATCH');
+      $('#modal-form form')[0].reset();
+      $.ajax({
+        url: "{{ url('pegawai') }}" + '/' + id + "/edit",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          $('#modal-form').modal('show');
+          $('.modal-title').text('Edit Pegawai');
+
+          $('#id').val(data.id);
+          $('#nip').val(data.nip);
+          $('#nama').val(data.nama);
+          $('#tanggal_lahir').val(data.tanggal_lahir);
+          $('#tempat_lahir').val(data.tempat_lahir);
+          $('#jenis_kelamin_id').val(data.jenis_kelamin_id);
+          $('#alamat').val(data.alamat);
+          $('#kabupaten').val(data.kabupaten);
+          $('#provinsi').val(data.provinsi);
+          $('#agama_id').val(data.agama_id);
+          $('#status_perkawinan_id').val(data.status_perkawinan_id);
+          $('#status_pegawai_id').val(data.status_pegawai_id);
+          $('#status_hukum_id').val(data.status_hukum_id);
+          $('#unit_id').val(data.unit_id);
+          $('#unit_kerja').val(data.unit_kerja);
+          $('#skpd').val(data.skpd);
+          $('#tmt_pensiun').val(data.tmt_pensiun);
+        },
+        error : function() {
+            alert("Data tidak ditemukan!");
+        }
+      });
+    }
+
+    $(function(){
+          $('#modal-form form').validator().on('submit', function (e) {
+              if (!e.isDefaultPrevented()){
+                  var id = $('#id').val();
+                  if (save_method == 'add') url = "{{ url('pegawai') }}";
+                  else url = "{{ url('pegawai') . '/' }}" + id;
+                  console.log(url);
+                  console.log($('#modal-form form').serialize());
+                  $.ajax({
+                      url : url,
+                      type : "PUT",
+                      data : $('#modal-form form').serialize(),
+                      success : function(data) {
+                        console.log(data);
+                          $('#modal-form').modal('hide');
+                          // window.href(route('pegawai.view', id));
+                          location.reload();
+                      },
+                      error : function(){
+                          alert('Oops! something error!');
+                      }
+                  });
+                  return false;
+              }
+          });
+      });
+
     // Riwayat Pendidikan
     var tablePendidikan = $('#unit-table-riwayatpendidikan').DataTable({
                   processing: true,
@@ -371,24 +436,108 @@
     }
 
     // Riwayat Pangkat
-    var table = $('#unit-table-riwayatpangkat').DataTable({
-                  processing: true,
-                  serverSide: true,
-                  ajax: "{{ route('api.riwayatpangkatpegawai', ['id' => $id]) }}",
-                  columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'nama_pangkat', name: 'nama_pangkat'},
-                    {data: 'tmt_pangkat', name: 'tmt_pangkat'},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
-                  ],
-                  rowCallback: function( row, data, index ) {
-                    var info = table.page.info();
-                    var page = info.page;
-                    var length = info.length;
-                    var num = page * length + (index + 1);
-                    $('td:eq(0)', row).html( num );
-                  }
-                });
+    var tablePangkat = $('#unit-table-riwayatpangkat').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('api.riwayatpangkatpegawai', ['id' => $id]) }}",
+        columns: [
+          {data: 'id', name: 'id'},
+          {data: 'nama_pangkat', name: 'nama_pangkat'},
+          {data: 'tmt_pangkat', name: 'tmt_pangkat'},
+          {data: 'action', name: 'action', orderable: false, searchable: false}
+        ],
+        rowCallback: function( row, data, index ) {
+          var info = table.page.info();
+          var page = info.page;
+          var length = info.length;
+          var num = page * length + (index + 1);
+          $('td:eq(0)', row).html( num );
+        }
+    });
+
+    function addFormRiwayatPangkat() {
+        save_method = "add";
+        $('input[name=_method]').val('POST');
+        $('#modal-form-pangkat').modal('show');
+        $('#modal-form-pangkat form')[0].reset();
+        $('.modal-title').text('Tambah Data Pangkat Pegawai');
+    }
+
+    function editFormRiwayatPangkat(id) {
+      save_method = 'edit';
+      $('input[name=_method]').val('PATCH');
+      $('#modal-form-pangkat form')[0].reset();
+      $.ajax({
+        url: "{{ url('riwayatpangkat') }}" + '/' + id + "/edit",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          $('#modal-form-pangkat').modal('show');
+          $('.modal-title').text('Edit Riwayat Pangkat');
+
+          $('#id').val(data.id);
+          $('#pegawai_id').val(data.pegawai_id);
+          $('#pangkat_id').val(data.pangkat_id);
+          $('#tmt_pangkat').val(data.tmt_pangkat);
+        },
+        error : function() {
+            alert("Data tidak ditemukan!");
+        }
+      });
+    }
+
+    function deleteDataRiwayatPangkat(id){
+      var popup = confirm("Anda yakin ingin mengahpus data ini?");
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      if(popup == true){
+        $.ajax({
+            url : "{{ url('riwayatpangkat') }}" + '/' + id,
+            type : "POST",
+            data : {'_method' : 'DELETE', '_token' : csrf_token},
+            success : function(data) {
+                tablePangkat.ajax.reload();
+                console.log(data);
+              },
+              error : function () {
+                alert("Oops! Terjadi kesalahan!");
+              }
+          })
+      }
+    }
+
+    $(function(){
+          $('#modal-form-pangkat form').validator().on('submit', function (e) {
+              if (!e.isDefaultPrevented()){
+                  var id = $('#id').val();
+                  if (save_method == 'add') url = "{{ url('riwayatpangkat') }}";
+                  else url = "{{ url('riwayatpangkat') . '/' }}" + id;
+
+                  $.ajax({
+                      url : url,
+                      type : "POST",
+                      data : $('#modal-form-pangkat form').serialize(),
+                      success : function(data) {
+                        console.log(data);
+                          $('#modal-form-pangkat').modal('hide');
+                          tablePangkat.ajax.reload();
+
+                          // var html = '';
+                          // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                          // html += '<strong>'+data+'</strong>'
+                          // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                          // html += '</div>'
+                          //
+                          // $('#content').prepend(html);
+
+                      },
+                      error : function(){
+                          alert('Oops! something error!');
+                      }
+                  });
+                  return false;
+              }
+          });
+      });
 
     // Riwayat Jabatan
     var table = $('#unit-table-riwayatjabatan').DataTable({
