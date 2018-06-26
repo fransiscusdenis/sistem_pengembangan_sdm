@@ -114,7 +114,20 @@
           $('#id').val(data.id);
           $('#nip').val(data.nip);
           $('#nama').val(data.nama);
+          $('#tanggal_lahir').val(data.tanggal_lahir);
+          $('#tempat_lahir').val(data.tempat_lahir);
+          $('#jenis_kelamin_id').val(data.jenis_kelamin_id);
+          $('#alamat').val(data.alamat);
+          $('#kabupaten').val(data.kabupaten);
+          $('#provinsi').val(data.provinsi);
+          $('#agama_id').val(data.agama_id);
+          $('#status_perkawinan_id').val(data.status_perkawinan_id);
+          $('#status_pegawai_id').val(data.status_pegawai_id);
+          $('#status_hukum_id').val(data.status_hukum_id);
           $('#unit_id').val(data.unit_id);
+          $('#unit_kerja').val(data.unit_kerja);
+          $('#skpd').val(data.skpd);
+          $('#tmt_pensiun').val(data.tmt_pensiun);
         },
         error : function() {
             alert("Data tidak ditemukan!");
@@ -157,13 +170,17 @@
                           $('#modal-form').modal('hide');
                           table.ajax.reload();
 
-                          var html = '';
-                          html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
-                          html += '<strong>'+data+'</strong>'
-                          html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
-                          html += '</div>'
+                          var link = "{{ url('view') . '/' }}" + data.pegawai.id;
+                          console.log(link);
+                          window.location.href = link;
 
-                          $('#content').prepend(html);
+                          // var html = '';
+                          // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                          // html += '<strong>'+data.message+'</strong>'
+                          // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                          // html += '</div>'
+                          //
+                          // $('#content').prepend(html);
 
                       },
                       error : function(){
