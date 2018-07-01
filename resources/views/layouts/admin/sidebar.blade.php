@@ -90,13 +90,11 @@
       </a>
     </li>
 
-    <li class="<?php if (Route::getCurrentRoute()->uri == 'riwayatdiklat') {
-      echo "active";
-    } ?>">
+    {{-- <li>
       <a href="{{ route('riwayatdiklat.index') }}">
         <i class="fa fa-book"></i> <span>List Riwayat Diklat</span>
       </a>
-    </li>
+    </li> --}}
 
   </ul>
 </section>

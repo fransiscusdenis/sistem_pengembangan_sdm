@@ -182,7 +182,7 @@
         <div class="box box-success">
           <div class="box-header">
             <h3 class="box-title">
-              <a class="btn btn-success" href="#"><i class="fa fa-plus"></i> Tambah Data</a>
+              <a class="btn btn-success" onclick="addFormRiwayatJabatan()"><i class="fa fa-plus"></i> Tambah Data</a>
             </h3>
             {{-- <div class="box-tools">
               <div class="input-group input-group-sm" style="width: 200px;">
@@ -216,7 +216,7 @@
     </div>
   </section>
 
-  <section class="content-header">
+  {{-- <section class="content-header">
     <h1>
       <i class="fa fa-book"></i> Data Diklat Pegawai
     </h1>
@@ -240,11 +240,12 @@
         </div>
       </div>
     </div>
+  </section> --}}
 
-    @include('pegawai.form')
-    @include('pegawai.formpendidikan')
-    @include('pegawai.formriwayatpangkat')
-  </section>
+  @include('pegawai.form')
+  @include('pegawai.formpendidikan')
+  @include('pegawai.formriwayatpangkat')
+  @include('pegawai.formriwayatjabatan')
 </div>
 
 @endsection
@@ -341,7 +342,7 @@
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                   ],
                   rowCallback: function( row, data, index ) {
-                    var info = table.page.info();
+                    var info = tablePendidikan.page.info();
                     var page = info.page;
                     var length = info.length;
                     var num = page * length + (index + 1);
@@ -447,7 +448,7 @@
           {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         rowCallback: function( row, data, index ) {
-          var info = table.page.info();
+          var info = tablePangkat.page.info();
           var page = info.page;
           var length = info.length;
           var num = page * length + (index + 1);
@@ -540,7 +541,7 @@
       });
 
     // Riwayat Jabatan
-    var table = $('#unit-table-riwayatjabatan').DataTable({
+    var tableJabatan = $('#unit-table-riwayatjabatan').DataTable({
                   processing: true,
                   serverSide: true,
                   ajax: "{{ route('api.riwayatjabatanpegawai', ['id' => $id]) }}",
@@ -553,7 +554,7 @@
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                   ],
                   rowCallback: function( row, data, index ) {
-                    var info = table.page.info();
+                    var info = tablePangkat.page.info();
                     var page = info.page;
                     var length = info.length;
                     var num = page * length + (index + 1);
@@ -561,7 +562,91 @@
                   }
                 });
 
+    function addFormRiwayatJabatan() {
+        save_method = "add";
+        $('input[name=_method]').val('POST');
+        $('#modal-form-jabatan').modal('show');
+        $('#modal-form-jabatan form')[0].reset();
+        $('.modal-title').text('Tambah Data Jataban Pegawai');
+    }
 
+    function editFormRiwayatJabatan(id) {
+      save_method = 'edit';
+      $('input[name=_method]').val('PATCH');
+      $('#modal-form-jabatan form')[0].reset();
+      $.ajax({
+        url: "{{ url('riwayatjabatan') }}" + '/' + id + "/edit",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          $('#modal-form-jabatan').modal('show');
+          $('.modal-title').text('Edit Riwayat Jabatan');
+
+          $('#id').val(data.id);
+          $('#pegawai_id').val(data.pegawai_id);
+          $('#pangkat_id').val(data.pangkat_id);
+          $('#jabatan').val(data.jabatan);
+          $('#jenis_jabatan_id').val(data.jenis_jabatan_id);
+          $('#tmt_jabatan').val(data.tmt_jabatan);
+        },
+        error : function() {
+            alert("Data tidak ditemukan!");
+        }
+      });
+    }
+
+    function deleteDataRiwayatJabatan(id){
+      var popup = confirm("Anda yakin ingin mengahpus data ini?");
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      if(popup == true){
+        $.ajax({
+            url : "{{ url('riwayatjabatan') }}" + '/' + id,
+            type : "POST",
+            data : {'_method' : 'DELETE', '_token' : csrf_token},
+            success : function(data) {
+                tableJabatan.ajax.reload();
+                console.log(data);
+              },
+              error : function () {
+                alert("Oops! Terjadi kesalahan!");
+              }
+          })
+      }
+    }
+
+    $(function(){
+          $('#modal-form-jabatan form').validator().on('submit', function (e) {
+              if (!e.isDefaultPrevented()){
+                  var id = $('#id').val();
+                  if (save_method == 'add') url = "{{ url('riwayatjabatan') }}";
+                  else url = "{{ url('riwayatjabatan') . '/' }}" + id;
+
+                  $.ajax({
+                      url : url,
+                      type : "POST",
+                      data : $('#modal-form-jabatan form').serialize(),
+                      success : function(data) {
+                        console.log(data);
+                          $('#modal-form-jabatan').modal('hide');
+                          tableJabatan.ajax.reload();
+
+                          // var html = '';
+                          // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                          // html += '<strong>'+data+'</strong>'
+                          // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                          // html += '</div>'
+                          //
+                          // $('#content').prepend(html);
+
+                      },
+                      error : function(){
+                          alert('Oops! something error!');
+                      }
+                  });
+                  return false;
+              }
+          });
+      });
 
 </script>
 @endpush

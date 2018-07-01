@@ -243,8 +243,8 @@ class PegawaiController extends Controller
       $datatables = Datatables::of($riwayatjabatan);
 
       $datatables->addColumn('action', function($riwayatjabatan){
-        return '<a onclick="editForm('. $riwayatjabatan->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-        '<a onclick="deleteData('. $riwayatjabatan->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+        return '<a onclick="editFormRiwayatJabatan('. $riwayatjabatan->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+        '<a onclick="deleteDataRiwayatJabatan('. $riwayatjabatan->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
       });
       return $datatables->make(true);
     }

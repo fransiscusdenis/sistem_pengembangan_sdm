@@ -1,4 +1,4 @@
-<div class="modal" id="modal-form" tabindex="1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal" id="modal-form-jabatan" tabindex="1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form-unit" method="post" class="form-horizontal" data-toggle="validator" enctype="multipart/form-data">
@@ -20,7 +20,7 @@
                       </div>
                     </div> --}}
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                       <label for="pegawai_id" class="col-md-3 control-label">NIP/Nama</label>
                       <div class="col-md-6">
                           <select class="form-control" id="pegawai_id" name="pegawai_id" required>
@@ -31,6 +31,15 @@
                               @endforeach
                             @endif
                           </select>
+                          <span class="help-block with-errors"></span>
+                      </div>
+                    </div> --}}
+
+                    <div class="form-group">
+                      {{-- <label for="jabatan" class="col-md-3 control-label">NIP/Nama</label> --}}
+                      <div class="col-md-3"></div>
+                      <div class="col-md-6">
+                          <input type="hidden" id="pegawai_id" name="pegawai_id" class="form-control" value="{{ $pegawaifind->id }}" required>
                           <span class="help-block with-errors"></span>
                       </div>
                     </div>
