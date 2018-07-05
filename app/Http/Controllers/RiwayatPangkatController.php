@@ -124,7 +124,7 @@ class RiwayatPangkatController extends Controller
         $riwayatpangkat = DB::table('riwayat_pangkats')
                           ->join('pangkats', 'riwayat_pangkats.pangkat_id', '=', 'pangkats.id')
                           ->join('pegawais', 'riwayat_pangkats.pegawai_id', '=', 'pegawais.id')
-                          ->select('riwayat_pangkats.*', 'pangkats.nama_pangkat', 'pegawais.nip', 'pegawais.nama')
+                          ->select('riwayat_pangkats.*', DB::raw('DATE_FORMAT(tmt_pangkat, "%m/%d/%Y") as tmt_pangkat'), 'pangkats.nama_pangkat', 'pegawais.nip', 'pegawais.nama')
                           ->get();
 
         $datatables = Datatables::of($riwayatpangkat);

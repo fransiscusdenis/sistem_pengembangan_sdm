@@ -63,7 +63,7 @@ Route::get('api/jenjang', 'JenjangController@apiJenjang')->name('api.jenjang');
 
 Route::resource('pegawai', 'PegawaiController');
 Route::get('view/{id}', 'pegawaiController@viewPegawai')->name('pegawai.view');
-Route::get('api/pegawai', 'PegawaiController@apiPegawai')->name('api.pegawai');
+Route::get('api/pegawai/{id?}', 'PegawaiController@apiPegawai')->name('api.pegawai');
 Route::get('api/riwayatpendidikanpegawai/{id}', 'PegawaiController@apiRiwayatPendidikan')->name('api.riwayatpendidikanpegawai');
 Route::get('api/riwayatjabatanpegawai/{id}', 'PegawaiController@apiRiwayatJabatan')->name('api.riwayatjabatanpegawai');
 Route::get('api/riwayatpangkatpegawai/{id}', 'PegawaiController@apiRiwayatPangkat')->name('api.riwayatpangkatpegawai');
@@ -79,3 +79,10 @@ Route::get('api/riwayatjabatan', 'RiwayatJabatanController@apiRiwayatJabatan')->
 
 Route::resource('riwayatdiklat', 'RiwayatDiklatController');
 Route::get('api/riwayatdiklat', 'RiwayatDiklatController@apiRiwayatDiklat')->name('api.riwayatdiklat');
+
+Route::get('filterpegawai', 'RiwayatJabatanController@filterpegawai')->name('filterpegawai');
+Route::get('api/filterpegawai/{id_pangkat?}/{id_jenis_jabatan?}/{id_unit?}', 'RiwayatJabatanController@apiFilterPegawai')->name('api.filterpegawai');
+
+Route::get('/rekomendasidiklat', function () {
+    return view('rekomendasidiklat.index');
+});

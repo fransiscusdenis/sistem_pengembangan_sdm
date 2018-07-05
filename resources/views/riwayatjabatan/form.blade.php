@@ -51,14 +51,6 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="jabatan" class="col-md-3 control-label">Jabatan</label>
-                      <div class="col-md-6">
-                          <input type="text" id="jabatan" name="jabatan" class="form-control" required>
-                          <span class="help-block with-errors"></span>
-                      </div>
-                    </div>
-
-                    <div class="form-group">
                       <label for="jenis_jabatan_id" class="col-md-3 control-label">Jenis Jabatan</label>
                       <div class="col-md-6">
                           <select class="form-control" id="jenis_jabatan_id" name="jenis_jabatan_id" required>
@@ -70,6 +62,14 @@
                             @endif
                           </select>
                           <span class="help-block with-errors"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="jabatan" class="col-md-3 control-label">Jabatan</label>
+                      <div class="col-md-6">
+                        <input type="text" id="jabatan" name="jabatan" class="form-control" required>
+                        <span class="help-block with-errors"></span>
                       </div>
                     </div>
 

@@ -66,35 +66,43 @@
       </a>
     </li>
 
-    <li class="<?php if (Route::getCurrentRoute()->uri == 'riwayatpendidikan') {
-      echo "active";
-    } ?>">
+    {{-- <li>
       <a href="{{ route('riwayatpendidikan.index') }}">
         <i class="fa fa-graduation-cap"></i> <span>List Riwayat Pendidikan</span>
       </a>
-    </li>
+    </li> --}}
 
-    <li class="<?php if (Route::getCurrentRoute()->uri == 'riwayatpangkat') {
-      echo "active";
-    } ?>">
+    {{-- <li>
       <a href="{{ route('riwayatpangkat.index') }}">
         <i class="fa fa-certificate"></i> <span>List Riwayat Pangkat</span>
       </a>
-    </li>
+    </li> --}}
 
-    <li class="<?php if (Route::getCurrentRoute()->uri == 'riwayatjabatan') {
-      echo "active";
-    } ?>">
+    {{-- <li>
       <a href="{{ route('riwayatjabatan.index') }}">
         <i class="fa fa-sitemap"></i> <span>List Riwayat Jabatan</span>
       </a>
-    </li>
+    </li> --}}
 
     {{-- <li>
       <a href="{{ route('riwayatdiklat.index') }}">
         <i class="fa fa-book"></i> <span>List Riwayat Diklat</span>
       </a>
     </li> --}}
+
+    <li class="<?php if (Route::getCurrentRoute()->uri == 'filterpegawai') {
+      echo "active";
+    } ?>">
+      <a href="{{ route('filterpegawai') }}">
+        <i class="fa fa-search"></i> <span>Filter Pegawai</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="{{ url('rekomendasidiklat') }}">
+        <i class="fa fa-id-badge"></i> <span>Rekomendasi Diklat Pegawai</span>
+      </a>
+    </li>
 
   </ul>
 </section>

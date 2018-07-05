@@ -584,7 +584,7 @@
 
           $('#id').val(data.id);
           $('#pegawai_id').val(data.pegawai_id);
-          $('#pangkat_id').val(data.pangkat_id);
+          $('#pangkat_idd').val(data.pangkat_id);
           $('#jabatan').val(data.jabatan);
           $('#jenis_jabatan_id').val(data.jenis_jabatan_id);
           $('#tmt_jabatan').val(data.tmt_jabatan);

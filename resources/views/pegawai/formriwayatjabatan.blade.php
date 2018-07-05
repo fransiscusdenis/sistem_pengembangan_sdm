@@ -47,7 +47,7 @@
                     <div class="form-group">
                       <label for="pangkat_id" class="col-md-3 control-label">Pangkat</label>
                       <div class="col-md-6">
-                          <select class="form-control" id="pangkat_id" name="pangkat_id" required>
+                          <select class="form-control" id="pangkat_idd" name="pangkat_id" required>
                             <option value=""></option>
                             @if ($pangkat)
                               @foreach ($pangkat as $val)

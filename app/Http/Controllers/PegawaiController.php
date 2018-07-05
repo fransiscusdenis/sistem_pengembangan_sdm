@@ -33,8 +33,9 @@ class PegawaiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+      //$ambil_unit = $request->get('unit_id');
       $pegawai = Pegawai::all();
       $jeniskelamin = JenisKelamin::all();
       $agama = Agama::all();
@@ -162,10 +163,10 @@ class PegawaiController extends Controller
         Pegawai::destroy($id);
     }
 
-    public function apiPegawai(Request $request)
+    public function apiPegawai(Request $request, $id = 0)
     {
         //$pegawai = Pegawai::all();
-        $pegawai = DB::table('pegawais')
+        $data = DB::table('pegawais')
                           ->join('jenis_kelamins', 'pegawais.jenis_kelamin_id', '=', 'jenis_kelamins.id')
                           ->join('agamas', 'pegawais.agama_id', '=', 'agamas.id')
                           ->join('status_perkawinans', 'pegawais.status_perkawinan_id', '=', 'status_perkawinans.id')
@@ -175,8 +176,14 @@ class PegawaiController extends Controller
                           ->select('pegawais.*', 'jenis_kelamins.jenis_kelamin',
                                    'agamas.nama_agama', 'status_perkawinans.status_perkawinan',
                                    'status_pegawais.status_pegawai', 'status_hukums.status_hukum',
-                                   'units.nama_unit')
-                          ->get();
+                                   'units.nama_unit');
+
+        if ($id != 0) {
+          $pegawai = $data->where(['pegawais.unit_id' => $id,
+                          ])->get();
+        }else{
+          $pegawai = $data->get();
+        }
 
         $datatables = Datatables::of($pegawai);
 
@@ -215,7 +222,7 @@ class PegawaiController extends Controller
         $riwayatpangkat = DB::table('riwayat_pangkats')
                           ->join('pangkats', 'riwayat_pangkats.pangkat_id', '=', 'pangkats.id')
                           ->join('pegawais', 'riwayat_pangkats.pegawai_id', '=', 'pegawais.id')
-                          ->select('riwayat_pangkats.*', 'pangkats.nama_pangkat', 'pegawais.nip', 'pegawais.nama')
+                          ->select('riwayat_pangkats.*',  DB::raw('DATE_FORMAT(tmt_pangkat, "%m/%d/%Y") as tmt_pangkat'), 'pangkats.nama_pangkat', 'pegawais.nip', 'pegawais.nama')
                           ->where('pegawai_id', '=', $id)
                           ->get();
 
@@ -236,7 +243,7 @@ class PegawaiController extends Controller
       // ->join('jabatans', 'riwayat_jabatans.jabatan_id', '=', 'jabatans.id')
       ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
       ->join('pegawais', 'riwayat_jabatans.pegawai_id', '=', 'pegawais.id')
-      ->select('riwayat_jabatans.*', 'pangkats.nama_pangkat', 'jenis_jabatans.jenis_jabatan', 'pegawais.nip', 'pegawais.nama')
+      ->select('riwayat_jabatans.*', DB::raw('DATE_FORMAT(tmt_jabatan, "%m/%d/%Y") as tmt_jabatan'), 'pangkats.nama_pangkat', 'jenis_jabatans.jenis_jabatan', 'pegawais.nip', 'pegawais.nama')
       ->where('pegawai_id', '=', $id)
       ->get();
 
@@ -266,7 +273,7 @@ class PegawaiController extends Controller
       $pegawaifind = Pegawai::find($id);
 
       $pegawai = DB::select(DB::raw(
-        "SELECT * FROM pegawais p, jenis_kelamins jk, agamas a, status_pegawais speg,
+        "SELECT *, DATE_FORMAT(tanggal_lahir, '%m/%d/%Y') as tanggal_lahir, DATE_FORMAT(tmt_pensiun, '%m/%d/%Y') as tmt_pensiun FROM pegawais p, jenis_kelamins jk, agamas a, status_pegawais speg,
          status_hukums sh, status_perkawinans sp, units u
          WHERE p.id=$id
          AND jk.id = p.jenis_kelamin_id
@@ -276,6 +283,8 @@ class PegawaiController extends Controller
          AND sp.id = p.status_perkawinan_id
          AND u.id = p.unit_id"
       ));
+
+      // dd($pegawai);
 
       return view('pegawai.view', [
         'label'=> 'DataPegawai',

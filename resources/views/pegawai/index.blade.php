@@ -1,5 +1,17 @@
 @extends('layouts.admin.master')
 
+@section('custom_css')
+
+  <style media="screen">
+    .no{ width: 55px !important; }
+    .nip{ width: 155px !important; }
+    .nama{ width: 300px !important; }
+    .nama_unit{ width: 320px !important; }
+    .action{ width: 115px !important; }
+  </style>
+
+@endsection
+
 @section('content')
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -30,6 +42,20 @@
                 </div>
               </div>
             </div> --}}
+
+            <div class="pull-right" style="display: inline-block;">
+                <div style="display: inline-block;">
+                    <select class="form-control" id="unit_id" name="unit_id">
+                      <option disabled>Pilih Unit</option>
+                      <option value="0" selected>Semua Unit</option>
+                      @if ($unit)
+                        @foreach ($unit as $val)
+                          <option value="{{ $val->id }}">{{ $val->nama_unit }}</option>
+                        @endforeach
+                      @endif
+                    </select>
+                </div>
+            </div>
           </div>
           <!-- /.box-header -->
           <div id="content" class="box-body table-responsive">
@@ -37,11 +63,11 @@
               <table id="unit-table" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>
                       <tr>
-                          <th width="25px">No</th>
-                          <th width="200px">NIP</th>
+                          <th>No</th>
+                          <th>NIP</th>
                           <th>Nama</th>
                           <th>Unit</th>
-                          <th width="140px" style="text-align: center;">Action</th>
+                          <th style="text-align: center;">Action</th>
                       </tr>
                   </thead>
                   <tbody></tbody>
@@ -71,25 +97,52 @@
 <script src="{{ asset('assets/bootstrap/js/ie10-viewport-bug-workaround.js') }}"></script>
 
 <script>
-    var table = $('#unit-table').DataTable({
-                  processing: true,
-                  serverSide: true,
-                  ajax: "{{ route('api.pegawai') }}",
-                  columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'nip', name: 'nip'},
-                    {data: 'nama', name: 'nama'},
-                    {data: 'nama_unit', name: 'nama_unit'},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
-                  ],
-                  rowCallback: function( row, data, index ) {
-                    var info = table.page.info();
-                    var page = info.page;
-                    var length = info.length;
-                    var num = page * length + (index + 1);
-                    $('td:eq(0)', row).html( num );
-                  }
-                });
+
+    var id_unit = $('#unit_id option:selected').val();
+    table(id_unit);
+    console.log(id_unit);
+
+    function table(id_unit) {
+      var table = $('#unit-table').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ route('api.pegawai')  }}/" + id_unit,
+          columns: [
+            { className: "no", data: 'id', name: 'id'},
+            { className: "nip", data: 'nip', name: 'nip'},
+            { className: "nama", data: 'nama', name: 'nama'},
+            { className: "nama_unit", data: 'nama_unit', name: 'nama_unit'},
+            { className: "action", data: 'action', name: 'action', orderable: false, searchable: false}
+          ],
+          rowCallback: function( row, data, index ) {
+            var info = table.page.info();
+            var page = info.page;
+            var length = info.length;
+            var num = page * length + (index + 1);
+            $('td:eq(0)', row).html( num );
+          }
+      });
+    }
+
+    $('#unit_id').change(function(){
+      var id_unit = $('#unit_id option:selected').val();
+
+      $.ajax({
+        dataType : "json",
+          url : "{{ route('api.pegawai') }}" + '/' + id_unit,
+          type : "GET",
+          success : function(data) {
+            $('#unit-table').dataTable().fnDestroy();
+            table(id_unit);
+            // window.location.reload();
+            console.log(id_unit);
+          },
+          error : function () {
+            alert("Oops! Terjadi kesalahan!");
+          }
+        })
+
+    });
 
     function addForm() {
       save_method = "add";
@@ -138,14 +191,16 @@
     function deleteData(id){
       var popup = confirm("Anda yakin ingin mengahpus data ini?");
       var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      var id_unit = $('#unit_id option:selected').val();
       if(popup == true){
         $.ajax({
             url : "{{ url('pegawai') }}" + '/' + id,
             type : "POST",
             data : {'_method' : 'DELETE', '_token' : csrf_token},
             success : function(data) {
-                table.ajax.reload();
-                console.log(data);
+                $('#unit-table').dataTable().fnDestroy();
+                table(id_unit);
+                console.log(id_unit);
               },
               error : function () {
                 alert("Oops! Terjadi kesalahan!");
@@ -168,7 +223,8 @@
                       success : function(data) {
                         console.log(data);
                           $('#modal-form').modal('hide');
-                          table.ajax.reload();
+                          $('#unit-table').dataTable().fnDestroy();
+                          // table.ajax.reload();
 
                           var link = "{{ url('view') . '/' }}" + data.pegawai.id;
                           console.log(link);
