@@ -102,7 +102,7 @@
             </div> --}}
           </div>
           <!-- /.box-header -->
-          <div id="content" class="box-body table-responsive">
+          <div id="content" class="box-body table">
 
               <table id="unit-table-riwayatpendidikan" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>
@@ -126,7 +126,7 @@
 
   <section class="content-header">
     <h1>
-      <i class="fa fa-certificate"></i> Data Pangkat Pegawai
+      <i class="fa fa-tags"></i> Data Pangkat Pegawai
     </h1>
   </section>
 
@@ -149,7 +149,7 @@
             </div> --}}
           </div>
           <!-- /.box-header -->
-          <div id="content" class="box-body table-responsive">
+          <div id="content" class="box-body table">
 
               <table id="unit-table-riwayatpangkat" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>
@@ -195,7 +195,7 @@
             </div> --}}
           </div>
           <!-- /.box-header -->
-          <div id="content" class="box-body table-responsive">
+          <div id="content" class="box-body table">
 
               <table id="unit-table-riwayatjabatan" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>
@@ -205,6 +205,98 @@
                           <th>Jabatan</th>
                           <th>Jenis Jabatan</th>
                           <th>TMT Jabatan</th>
+                          <th width="140px" style="text-align: center;">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-header">
+    <h1>
+      <i class="fa fa-certificate"></i> Data Eselon Pegawai
+    </h1>
+  </section>
+
+  <section class="content">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-success">
+          <div class="box-header">
+            <h3 class="box-title">
+              <a class="btn btn-success" onclick="addFormRiwayatEselon()"><i class="fa fa-plus"></i> Tambah Data</a>
+            </h3>
+            {{-- <div class="box-tools">
+              <div class="input-group input-group-sm" style="width: 200px;">
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+            </div> --}}
+          </div>
+          <!-- /.box-header -->
+          <div id="content" class="box-body table">
+
+              <table id="unit-table-riwayateselon" class="table table-striped table-bordered table-hover" style="width:100%">
+                  <thead>
+                      <tr>
+                          <th width="25px">No</th>
+                          <th>Eselon</th>
+                          <th>Jabatan</th>
+                          <th width="140px" style="text-align: center;">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+
+  <section class="content-header">
+    <h1>
+      <i class="fa  fa-sticky-note"></i> Data Diklat Pegawai
+    </h1>
+  </section>
+
+  <section class="content">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-success">
+          <div class="box-header">
+            <h3 class="box-title">
+              <a class="btn btn-success" onclick="addFormRiwayatDiklat()"><i class="fa fa-plus"></i> Tambah Data</a>
+            </h3>
+            {{-- <div class="box-tools">
+              <div class="input-group input-group-sm" style="width: 200px;">
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+            </div> --}}
+          </div>
+          <!-- /.box-header -->
+          <div id="content" class="box-body table">
+
+              <table id="unit-table-riwayatdiklat" class="table table-striped table-bordered table-hover" style="width:100%">
+                  <thead>
+                      <tr>
+                          <th width="25px">No</th>
+                          <th>Nama Diklat</th>
+                          <th>Tanggal Sertifikat</th>
+                          <th>No. Sertifikat</th>
+                          <th>Peran</th>
                           <th width="140px" style="text-align: center;">Action</th>
                       </tr>
                   </thead>
@@ -246,6 +338,8 @@
   @include('pegawai.formpendidikan')
   @include('pegawai.formriwayatpangkat')
   @include('pegawai.formriwayatjabatan')
+  @include('pegawai.formriwayatdiklat')
+  @include('pegawai.formriwayateselon')
 </div>
 
 @endsection
@@ -540,6 +634,111 @@
           });
       });
 
+      // Riwayat Eselon
+      var tableEselon = $('#unit-table-riwayateselon').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ route('api.riwayateselonpegawai', ['id' => $id]) }}",
+          columns: [
+            {data: 'id', name: 'id'},
+            {data: 'eselon', name: 'eselon'},
+            {data: 'jabatan', name: 'jabatan'},
+            {data: 'action', name: 'action', orderable: false, searchable: false}
+          ],
+          rowCallback: function( row, data, index ) {
+            var info = tableEselon.page.info();
+            var page = info.page;
+            var length = info.length;
+            var num = page * length + (index + 1);
+            $('td:eq(0)', row).html( num );
+          }
+      });
+
+      function addFormRiwayatEselon() {
+          save_method = "add";
+          $('input[name=_method]').val('POST');
+          $('#modal-form-eselon').modal('show');
+          $('#modal-form-eselon form')[0].reset();
+          $('.modal-title').text('Tambah Data Eselon Pegawai');
+      }
+
+      function editFormRiwayatEselon(id) {
+        save_method = 'edit';
+        $('input[name=_method]').val('PATCH');
+        $('#modal-form-eselon form')[0].reset();
+        $.ajax({
+          url: "{{ url('riwayateselon') }}" + '/' + id + "/edit",
+          type: "GET",
+          dataType: "JSON",
+          success: function(data) {
+            $('#modal-form-eselon').modal('show');
+            $('.modal-title').text('Edit Riwayat Eselon');
+
+            $('#id').val(data.id);
+            $('#pegawai_id').val(data.pegawai_id);
+            $('#eselon_id').val(data.eselon_id);
+            $('#jabatann').val(data.jabatan);
+            console.log(data.jabatan);
+          },
+          error : function() {
+              alert("Data tidak ditemukan!");
+          }
+        });
+      }
+
+      function deleteDataRiwayatEselon(id){
+        var popup = confirm("Anda yakin ingin mengahpus data ini?");
+        var csrf_token = $('meta[name="csrf-token"]').attr('content');
+        if(popup == true){
+          $.ajax({
+              url : "{{ url('riwayateselon') }}" + '/' + id,
+              type : "POST",
+              data : {'_method' : 'DELETE', '_token' : csrf_token},
+              success : function(data) {
+                  tableEselon.ajax.reload();
+                  console.log(data);
+                },
+                error : function () {
+                  alert("Oops! Terjadi kesalahan!");
+                }
+            })
+        }
+      }
+
+      $(function(){
+            $('#modal-form-eselon form').validator().on('submit', function (e) {
+                if (!e.isDefaultPrevented()){
+                    var id = $('#id').val();
+                    if (save_method == 'add') url = "{{ url('riwayateselon') }}";
+                    else url = "{{ url('riwayateselon') . '/' }}" + id;
+
+                    $.ajax({
+                        url : url,
+                        type : "POST",
+                        data : $('#modal-form-eselon form').serialize(),
+                        success : function(data) {
+                          console.log(data);
+                            $('#modal-form-eselon').modal('hide');
+                            tableEselon.ajax.reload();
+
+                            // var html = '';
+                            // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                            // html += '<strong>'+data+'</strong>'
+                            // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                            // html += '</div>'
+                            //
+                            // $('#content').prepend(html);
+
+                        },
+                        error : function(){
+                            alert('Oops! something error!');
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
     // Riwayat Jabatan
     var tableJabatan = $('#unit-table-riwayatjabatan').DataTable({
                   processing: true,
@@ -647,6 +846,115 @@
               }
           });
       });
+
+      //Riwayat Diklat
+      var tableDiklat = $('#unit-table-riwayatdiklat').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('api.riwayatdiklatpegawai', ['id' => $id]) }}",
+                    columns: [
+                      {data: 'id', name: 'id'},
+                      {data: 'nama_diklat', name: 'nama_diklat'},
+                      {data: 'tgl_sertifikat', name: 'tgl_sertifikat'},
+                      {data: 'no_sertifikat', name: 'no_sertifikat'},
+                      {data: 'peran', name: 'peran'},
+                      {data: 'action', name: 'action', orderable: false, searchable: false}
+                    ],
+                    rowCallback: function( row, data, index ) {
+                      var info = tableDiklat.page.info();
+                      var page = info.page;
+                      var length = info.length;
+                      var num = page * length + (index + 1);
+                      $('td:eq(0)', row).html( num );
+                    }
+                  });
+
+      function addFormRiwayatDiklat() {
+          save_method = "add";
+          $('input[name=_method]').val('POST');
+          $('#modal-form-diklat').modal('show');
+          $('#modal-form-diklat form')[0].reset();
+          $('.modal-title').text('Tambah Data Diklat Pegawai');
+      }
+
+      function editFormRiwayatDiklat(id) {
+        save_method = 'edit';
+        $('input[name=_method]').val('PATCH');
+        $('#modal-form-diklat form')[0].reset();
+        $.ajax({
+          url: "{{ url('riwayatdiklat') }}" + '/' + id + "/edit",
+          type: "GET",
+          dataType: "JSON",
+          success: function(data) {
+            $('#modal-form-diklat').modal('show');
+            $('.modal-title').text('Edit Riwayat Diklat');
+
+            $('#id').val(data.id);
+            $('#pegawai_id').val(data.pegawai_id);
+            $('#nama_diklat').val(data.nama_diklat);
+            $('#tgl_sertifikat').val(data.tgl_sertifikat);
+            $('#no_sertifikat').val(data.no_sertifikat);
+            $('#peran').val(data.peran);
+          },
+          error : function() {
+              alert("Data tidak ditemukan!");
+          }
+        });
+      }
+
+      function deleteDataRiwayatDiklat(id){
+        var popup = confirm("Anda yakin ingin mengahpus data ini?");
+        var csrf_token = $('meta[name="csrf-token"]').attr('content');
+        if(popup == true){
+          $.ajax({
+              url : "{{ url('riwayatdiklat') }}" + '/' + id,
+              type : "POST",
+              data : {'_method' : 'DELETE', '_token' : csrf_token},
+              success : function(data) {
+                  tableDiklat.ajax.reload();
+                  console.log(data);
+                },
+                error : function () {
+                  alert("Oops! Terjadi kesalahan!");
+                }
+            })
+        }
+      }
+
+      $(function(){
+            $('#modal-form-diklat form').validator().on('submit', function (e) {
+                if (!e.isDefaultPrevented()){
+                    var id = $('#id').val();
+                    if (save_method == 'add') url = "{{ url('riwayatdiklat') }}";
+                    else url = "{{ url('riwayatdiklat') . '/' }}" + id;
+
+                    $.ajax({
+                        url : url,
+                        type : "POST",
+                        data : $('#modal-form-diklat form').serialize(),
+                        success : function(data) {
+                          console.log(data);
+                            $('#modal-form-diklat').modal('hide');
+                            tableDiklat.ajax.reload();
+
+                            // var html = '';
+                            // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                            // html += '<strong>'+data+'</strong>'
+                            // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                            // html += '</div>'
+                            //
+                            // $('#content').prepend(html);
+
+                        },
+                        error : function(){
+                            alert('Oops! something error!');
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
 
 </script>
 @endpush

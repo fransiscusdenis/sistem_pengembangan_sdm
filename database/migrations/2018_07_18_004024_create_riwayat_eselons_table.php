@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRiwayatDiklatsTable extends Migration
+class CreateRiwayatEselonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateRiwayatDiklatsTable extends Migration
      */
     public function up()
     {
-        Schema::create('riwayat_diklats', function (Blueprint $table) {
+        Schema::create('riwayat_eselons', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('pegawai_id');
-            $table->string('nama_diklat');
-            $table->string('no_sertifikat');
-            $table->date('tgl_sertifikat');
-            $table->string('peran');
+            $table->integer('pegawai_id');
+            $table->integer('eselon_id');
+            $table->string('jabatan');
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateRiwayatDiklatsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('riwayat_diklats');
+        Schema::dropIfExists('riwayat_eselons');
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use DB;
+use App\Unit;
 use App\Pangkat;
 use App\Jabatan;
 use App\Pegawai;
-use App\Unit;
 use App\JenisJabatan;
 use App\RiwayatJabatan;
 use Illuminate\Http\Request;
@@ -218,8 +218,7 @@ class RiwayatJabatanController extends Controller
         $datatables = Datatables::of($filterpegawai);
 
         $datatables->addColumn('action', function($filterpegawai){
-          return '<a onclick="editForm('. $filterpegawai->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-          '<a onclick="deleteData('. $filterpegawai->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+          return '<a onclick="viewRiwayatDiklat('. $filterpegawai->pegawai_id .')" class="btn btn-info btn-xs"><i class="glyphicon glyphicon-eye-open"></i> Lihat Diklat</a> ';
         });
         return $datatables->make(true);
     }

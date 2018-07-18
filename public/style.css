@@ -30,6 +30,30 @@
   float: right;
 }
 
+#unit-table-riwayateselon_filter {
+  float: right;
+}
+
+#unit-table-riwayateselon_paginate {
+  float: right;
+}
+
+#unit-table-riwayatdiklat_filter {
+  float: right;
+}
+
+#unit-table-riwayatdiklat_paginate {
+  float: right;
+}
+
+#unit-table-riwayatdiklatpegawai_filter {
+  float: right;
+}
+
+#unit-table-riwayatdiklatpegawai_paginate {
+  float: right;
+}
+
 ul.pagination {
   margin: 0px;
 }

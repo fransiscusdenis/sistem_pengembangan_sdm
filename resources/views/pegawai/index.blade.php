@@ -7,7 +7,7 @@
     .nip{ width: 155px !important; }
     .nama{ width: 300px !important; }
     .nama_unit{ width: 320px !important; }
-    .action{ width: 115px !important; }
+    .action{ width: 120px !important; }
   </style>
 
 @endsection
@@ -58,7 +58,7 @@
             </div>
           </div>
           <!-- /.box-header -->
-          <div id="content" class="box-body table-responsive">
+          <div id="content" class="box-body table">
 
               <table id="unit-table" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>

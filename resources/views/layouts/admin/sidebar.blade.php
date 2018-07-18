@@ -1,14 +1,14 @@
 <section class="sidebar">
   <!-- Sidebar user panel -->
-  <!-- <div class="user-panel">
+  <div class="user-panel">
     <div class="pull-left image">
-      <img src="dist/img/laravel-indonesia.png" class="img-circle" alt="User Image">
+      <img src="{{ asset('image/a.jpg') }}" class="img-circle" alt="User Image">
     </div>
     <div class="pull-left info">
-      <p>Sector Code</p>
-      <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+      <p style="font-size:13px;">Sistem Informasi Strategis</p>
+      <a href="#"><!--<i class="fa fa-circle text-success">--></i> Pengembangan SDM</a>
     </div>
-  </div> -->
+  </div>
 
   <!-- search form -->
   {{-- <form action="#" method="get" class="sidebar-form">
@@ -98,10 +98,24 @@
       </a>
     </li>
 
-    <li>
-      <a href="{{ url('rekomendasidiklat') }}">
-        <i class="fa fa-id-badge"></i> <span>Rekomendasi Diklat Pegawai</span>
+    {{-- <li>
+      <a href="#">
+        <i class="fa fa-id-badge"></i> <span>Usulan Diklat Pegawai</span>
       </a>
+    </li> --}}
+
+    <li class="treeview">
+      <a href="#">
+        <i class="fa fa-id-badge"></i> <span>Usulan Diklat</span>
+        <span class="pull-right-container">
+          <i class="fa fa-angle-left pull-right"></i>
+        </span>
+      </a>
+      <ul class="treeview-menu">
+        <li><a href="#"><i class="fa fa-circle-o"></i> Diklat PIM II</a></li>
+        <li><a href="#"><i class="fa fa-circle-o"></i> Diklat PIM III</a></li>
+        <li><a href="{{ route('usulandiklatpim4') }}"><i class="fa fa-circle-o"></i> Diklat PIM IV</a></li>
+      </ul>
     </li>
 
   </ul>

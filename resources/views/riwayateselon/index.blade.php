@@ -5,11 +5,11 @@
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <h1>
-      List Eselon
+      List Riwayat Eselon
     </h1>
     <ol class="breadcrumb">
       <li><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i> Home</a></li>
-      <li class="active">List Eselon</li>
+      <li class="active">List Riwayat Eselon</li>
     </ol>
   </section>
 
@@ -19,7 +19,7 @@
         <div class="box box-success">
           <div class="box-header">
             <h3 class="box-title">
-              <a class="btn btn-success" onclick="addForm()"><i class="fa fa-plus"></i> Tambah Data Eselon</a>
+              <a class="btn btn-success" onclick="addForm()"><i class="fa fa-plus"></i> Tambah Data Riwayat Eselon</a>
             </h3>
             {{-- <div class="box-tools">
               <div class="input-group input-group-sm" style="width: 200px;">
@@ -38,9 +38,10 @@
                   <thead>
                       <tr>
                           <th width="25px">No</th>
+                          <th>NIP</th>
+                          <th>Nama</th>
                           <th>Eselon</th>
-                          <th>Gol. Pangkat Tertinggi</th>
-                          <th>Gol. Pangkat Terendah</th>
+                          <th>Jabatan</th>
                           <th width="140px" style="text-align: center;">Action</th>
                       </tr>
                   </thead>
@@ -51,7 +52,7 @@
       </div>
     </div>
 
-    @include('eselon.form')
+    @include('riwayateselon.form')
   </section>
 </div>
 
@@ -74,12 +75,13 @@
     var table = $('#unit-table').DataTable({
                   processing: true,
                   serverSide: true,
-                  ajax: "{{ route('api.eselon') }}",
+                  ajax: "{{ route('api.riwayateselon') }}",
                   columns: [
                     {data: 'id', name: 'id'},
+                    {data: 'nip', name: 'nip'},
+                    {data: 'nama', name: 'nama'},
                     {data: 'eselon', name: 'eselon'},
-                    {data: 'pangkat_tertinggi', name: 'pangkat_tertinggi'},
-                    {data: 'pangkat_terendah', name: 'pangkat_terendah'},
+                    {data: 'jabatan', name: 'jabatan'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                   ],
                   rowCallback: function( row, data, index ) {
@@ -96,7 +98,7 @@
       $('input[name=_method]').val('POST');
       $('#modal-form').modal('show');
       $('#modal-form form')[0].reset();
-      $('.modal-title').text('Tambah Eselon');
+      $('.modal-title').text('Tambah Riwayat Eselon');
     }
 
     function editForm(id) {
@@ -104,17 +106,17 @@
       $('input[name=_method]').val('PATCH');
       $('#modal-form form')[0].reset();
       $.ajax({
-        url: "{{ url('eselon') }}" + '/' + id + "/edit",
+        url: "{{ url('riwayateselon') }}" + '/' + id + "/edit",
         type: "GET",
         dataType: "JSON",
         success: function(data) {
           $('#modal-form').modal('show');
-          $('.modal-title').text('Edit Eselon');
+          $('.modal-title').text('Edit Riwayat Eselon');
 
           $('#id').val(data.id);
-          $('#eselon').val(data.eselon);
-          $('#pangkat_tertinggi').val(data.pangkat_tertinggi);
-          $('#pangkat_terendah').val(data.pangkat_terendah);
+          $('#pegawai_id').val(data.pegawai_id);
+          $('#eselon_id').val(data.eselon_id);
+          $('#jabatan').val(data.jabatan);
         },
         error : function() {
             alert("Data tidak ditemukan!");
@@ -127,7 +129,7 @@
       var csrf_token = $('meta[name="csrf-token"]').attr('content');
       if(popup == true){
         $.ajax({
-            url : "{{ url('eselon') }}" + '/' + id,
+            url : "{{ url('riwayateselon') }}" + '/' + id,
             type : "POST",
             data : {'_method' : 'DELETE', '_token' : csrf_token},
             success : function(data) {
@@ -145,8 +147,8 @@
           $('#modal-form form').validator().on('submit', function (e) {
               if (!e.isDefaultPrevented()){
                   var id = $('#id').val();
-                  if (save_method == 'add') url = "{{ url('eselon') }}";
-                  else url = "{{ url('eselon') . '/' }}" + id;
+                  if (save_method == 'add') url = "{{ url('riwayateselon') }}";
+                  else url = "{{ url('riwayateselon') . '/' }}" + id;
 
                   $.ajax({
                       url : url,

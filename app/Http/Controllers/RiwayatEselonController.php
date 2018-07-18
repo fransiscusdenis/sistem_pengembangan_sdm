@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use DB;
+use App\Eselon;
 use App\Pegawai;
-use App\RiwayatDiklat;
+use App\RiwayatEselon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
 
-class RiwayatDiklatController extends Controller
+class RiwayatEselonController extends Controller
 {
     public function __construct()
     {
@@ -24,13 +25,15 @@ class RiwayatDiklatController extends Controller
      */
     public function index()
     {
-      $riwayatdiklat = RiwayatDiklat::all();
+      $riwayateselon = RiwayatEselon::all();
       $pegawai = Pegawai::all();
+      $eselon = Eselon::all();
 
-      return view('riwayatdiklat/index', [
-        'label'=> 'RiwayatDiklat',
-        'riwayatdiklat' => $riwayatdiklat,
-        'pegawai' => $pegawai
+      return view('riwayateselon/index', [
+        'label'=> 'Riwayat Eselon',
+        'riwayatpangkat' => $riwayateselon,
+        'pegawai' => $pegawai,
+        'eselon' => $eselon,
       ]);
     }
 
@@ -54,13 +57,11 @@ class RiwayatDiklatController extends Controller
     {
       $data = [
         'pegawai_id' => $request['pegawai_id'],
-        'nama_diklat' => $request['nama_diklat'],
-        'no_sertifikat' => $request['no_sertifikat'],
-        'tgl_sertifikat' => $request['tgl_sertifikat'],
-        'peran' => $request['peran']
+        'eselon_id' => $request['eselon_id'],
+        'jabatan' => $request['jabatan']
       ];
 
-      $riwayatdiklat = RiwayatDiklat::create($data);
+      $riwayateselon = RiwayatEselon::create($data);
 
       return response()->json('Berhasil Menambahkan Data!');
     }
@@ -84,8 +85,8 @@ class RiwayatDiklatController extends Controller
      */
     public function edit($id)
     {
-      $riwayatdiklat  = RiwayatDiklat::find($id);
-      return $riwayatdiklat;
+      $riwayateselon  = RiwayatEselon::find($id);
+      return $riwayateselon;
     }
 
     /**
@@ -97,13 +98,11 @@ class RiwayatDiklatController extends Controller
      */
     public function update(Request $request, $id)
     {
-      $riwayatdiklat = RiwayatDiklat::find($id);
-      $riwayatdiklat->pegawai_id = $request['pegawai_id'];
-      $riwayatdiklat->nama_diklat = $request['nama_diklat'];
-      $riwayatdiklat->no_sertifikat = $request['no_sertifikat'];
-      $riwayatdiklat->tgl_sertifikat = $request['tgl_sertifikat'];
-      $riwayatdiklat->peran = $request['peran'];
-      $riwayatdiklat->update();
+      $riwayateselon = RiwayatEselon::find($id);
+      $riwayateselon->pegawai_id = $request['pegawai_id'];
+      $riwayateselon->eselon_id = $request['eselon_id'];
+      $riwayateselon->jabatan = $request['jabatan'];
+      $riwayateselon->update();
 
       return response()->json('Berhasil Mengubah Data!');
     }
@@ -116,18 +115,16 @@ class RiwayatDiklatController extends Controller
      */
     public function destroy($id)
     {
-        RiwayatDiklat::destroy($id);
+        RiwayatEselon::destroy($id);
     }
 
-    public function apiRiwayatDiklat(Request $request)
+    public function apiRiwayatEselon(Request $request)
     {
-        //$riwayatdiklat = RiwayatDiklat::all();
-        $riwayatdiklat = DB::table('riwayat_diklats')
-                          ->join('pegawais', 'riwayat_diklats.pegawai_id', '=', 'pegawais.id')
-                          ->select('riwayat_diklats.*', DB::raw('DATE_FORMAT(tgl_sertifikat, "%m/%d/%Y") as tgl_sertifikat'), 'pegawais.nip', 'pegawais.nama')
-                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat II ('.'%')
-                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat III'.'%')
-                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat IV'.'%')
+        //$riwayatpangkat = RiwayatEselon::all();
+        $riwayatdiklat = DB::table('riwayat_eselons')
+                          ->join('eselons', 'riwayat_eselons.eselon_id', '=', 'eselons.id')
+                          ->join('pegawais', 'riwayat_eselons.pegawai_id', '=', 'pegawais.id')
+                          ->select('riwayat_eselons.*', 'eselons.eselon', 'pegawais.nip', 'pegawais.nama')
                           ->get();
 
         $datatables = Datatables::of($riwayatdiklat);

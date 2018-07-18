@@ -1,15 +1,20 @@
 @extends('layouts.admin.master')
 
+@push('links')
+<link rel="stylesheet" href="/css/app.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <h1>
-      List Eselon
+      List Riwayat Diklat
     </h1>
     <ol class="breadcrumb">
       <li><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i> Home</a></li>
-      <li class="active">List Eselon</li>
+      <li class="active">List Riwayat Diklat</li>
     </ol>
   </section>
 
@@ -19,7 +24,7 @@
         <div class="box box-success">
           <div class="box-header">
             <h3 class="box-title">
-              <a class="btn btn-success" onclick="addForm()"><i class="fa fa-plus"></i> Tambah Data Eselon</a>
+              <a class="btn btn-success" onclick="addForm()"><i class="fa fa-plus"></i> Tambah Data Riwayat Diklat</a>
             </h3>
             {{-- <div class="box-tools">
               <div class="input-group input-group-sm" style="width: 200px;">
@@ -38,9 +43,12 @@
                   <thead>
                       <tr>
                           <th width="25px">No</th>
-                          <th>Eselon</th>
-                          <th>Gol. Pangkat Tertinggi</th>
-                          <th>Gol. Pangkat Terendah</th>
+                          <th>NIP</th>
+                          <th>Nama</th>
+                          <th>Nama Diklat</th>
+                          <th>Tanggal Sertifikat</th>
+                          <th>No. Sertifikat</th>
+                          <th>Peran</th>
                           <th width="140px" style="text-align: center;">Action</th>
                       </tr>
                   </thead>
@@ -51,7 +59,7 @@
       </div>
     </div>
 
-    @include('eselon.form')
+    @include('riwayatdiklat.form')
   </section>
 </div>
 
@@ -69,17 +77,29 @@
 
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{{ asset('assets/bootstrap/js/ie10-viewport-bug-workaround.js') }}"></script>
+<script src="/js/app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+{{-- script untuk select2 --}}
+{{-- <script>
+    $(document).ready(function(){
+        $("#pegawai_id").select2();
+    });
+</script> --}}
 
 <script>
     var table = $('#unit-table').DataTable({
                   processing: true,
                   serverSide: true,
-                  ajax: "{{ route('api.eselon') }}",
+                  ajax: "{{ route('api.riwayatdiklat') }}",
                   columns: [
                     {data: 'id', name: 'id'},
-                    {data: 'eselon', name: 'eselon'},
-                    {data: 'pangkat_tertinggi', name: 'pangkat_tertinggi'},
-                    {data: 'pangkat_terendah', name: 'pangkat_terendah'},
+                    {data: 'nip', name: 'nip'},
+                    {data: 'nama', name: 'nama'},
+                    {data: 'nama_diklat', name: 'nama_diklat'},
+                    {data: 'tgl_sertifikat', name: 'tgl_sertifikat'},
+                    {data: 'no_sertifikat', name: 'no_sertifikat'},
+                    {data: 'peran', name: 'peran'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                   ],
                   rowCallback: function( row, data, index ) {
@@ -96,7 +116,7 @@
       $('input[name=_method]').val('POST');
       $('#modal-form').modal('show');
       $('#modal-form form')[0].reset();
-      $('.modal-title').text('Tambah Eselon');
+      $('.modal-title').text('Tambah Riwayat Diklat');
     }
 
     function editForm(id) {
@@ -104,17 +124,19 @@
       $('input[name=_method]').val('PATCH');
       $('#modal-form form')[0].reset();
       $.ajax({
-        url: "{{ url('eselon') }}" + '/' + id + "/edit",
+        url: "{{ url('riwayatdiklat') }}" + '/' + id + "/edit",
         type: "GET",
         dataType: "JSON",
         success: function(data) {
           $('#modal-form').modal('show');
-          $('.modal-title').text('Edit Eselon');
+          $('.modal-title').text('Edit Riwayat Diklat');
 
           $('#id').val(data.id);
-          $('#eselon').val(data.eselon);
-          $('#pangkat_tertinggi').val(data.pangkat_tertinggi);
-          $('#pangkat_terendah').val(data.pangkat_terendah);
+          $('#pegawai_id').val(data.pegawai_id);
+          $('#nama_diklat').val(data.nama_diklat);
+          $('#tgl_sertifikat').val(data.tgl_sertifikat);
+          $('#no_sertifikat').val(data.no_sertifikat);
+          $('#peran').val(data.peran);
         },
         error : function() {
             alert("Data tidak ditemukan!");
@@ -127,7 +149,7 @@
       var csrf_token = $('meta[name="csrf-token"]').attr('content');
       if(popup == true){
         $.ajax({
-            url : "{{ url('eselon') }}" + '/' + id,
+            url : "{{ url('riwayatdiklat') }}" + '/' + id,
             type : "POST",
             data : {'_method' : 'DELETE', '_token' : csrf_token},
             success : function(data) {
@@ -145,8 +167,8 @@
           $('#modal-form form').validator().on('submit', function (e) {
               if (!e.isDefaultPrevented()){
                   var id = $('#id').val();
-                  if (save_method == 'add') url = "{{ url('eselon') }}";
-                  else url = "{{ url('eselon') . '/' }}" + id;
+                  if (save_method == 'add') url = "{{ url('riwayatdiklat') }}";
+                  else url = "{{ url('riwayatdiklat') . '/' }}" + id;
 
                   $.ajax({
                       url : url,
@@ -157,13 +179,13 @@
                           $('#modal-form').modal('hide');
                           table.ajax.reload();
 
-                          // var html = '';
-                          // html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
-                          // html += '<strong>'+data+'</strong>'
-                          // html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
-                          // html += '</div>'
-                          //
-                          // $('#content').prepend(html);
+                          var html = '';
+                          html += '<div class="alert alert-success" style="background-color:#dff0d8 !important; color:#00a65a !important">';
+                          html += '<strong>'+data+'</strong>'
+                          html += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                          html += '</div>'
+
+                          $('#content').prepend(html);
 
                       },
                       error : function(){

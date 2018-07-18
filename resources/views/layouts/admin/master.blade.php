@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>SDM Dishut</title>
+  <title>SI SDM Dinas Kehutanan</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="{{ asset('adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css')}}">
@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="{{ asset('style.css')}}">
   @yield('custom_css')
   @stack('links')
+  {{-- <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script> --}}
 </head>
 
 <body class="hold-transition skin-green-light sidebar-mini">

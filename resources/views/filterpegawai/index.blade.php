@@ -9,6 +9,12 @@
     .nama_pangkat{ width: 115px !important; }
     .jenis_jabatan{ width: 115px !important; }
     .jabatan{ width: 350px !important; }
+    .action { text-align: center;}
+
+    .label {
+      padding: 0px;
+      border-radius: 20px;
+    }
   </style>
 
 @endsection
@@ -93,7 +99,7 @@
 
           </div>
           <!-- /.box-header -->
-          <div id="content" class="box-body table-responsive">
+          <div id="content" class="box-body table">
 
               <table id="unit-table" class="table table-striped table-bordered table-hover" style="width:100%">
                   <thead>
@@ -105,6 +111,7 @@
                           <th>Pangkat</th>
                           <th>Jenis Jabatan</th>
                           <th>Jabatan</th>
+                          <th style="text-align: center;">Diklat</th>
                           {{-- <th>TMT Jabatan</th> --}}
                           {{-- <th width="140px" style="text-align: center;">Action</th> --}}
                       </tr>
@@ -117,6 +124,8 @@
     </div>
 
   </section>
+
+  @include('filterpegawai.riwayatdiklatpegawai')
 </div>
 
 @endsection
@@ -165,7 +174,7 @@
             {className: "jenis_jabatan", data: 'jenis_jabatan', name: 'jenis_jabatan'},
             {className: "jabatan", data: 'jabatan', name: 'jabatan'},
             // {data: 'tmt_jabatan', name: 'tmt_jabatan'},
-            // {data: 'action', name: 'action', orderable: false, searchable: false}
+            {className: "action", data: 'action', name: 'action', orderable: false, searchable: false}
           ],
           rowCallback: function( row, data, index ) {
             var info = table.page.info();
@@ -227,7 +236,7 @@
       var id_pangkat = $('#pangkat_id option:selected').val();
 
       $.ajax({
-        dataType : "json",
+          dataType : "json",
           url : "{{ route('api.filterpegawai') }}" + '/' + id_pangkat + "/" + id_jenis_jabatan + "/" + id_unit,
           type : "GET",
           success : function(data) {
@@ -242,6 +251,61 @@
         })
 
     });
+
+    function viewRiwayatDiklat(id) {
+      getDataPegawai(id);
+
+      // $('#modal-form-riwayatdiklat').modal('show');
+      // $('.modal-title').text('Riwayat Diklat Pegawai');
+      // console.log(id);
+
+      $('#unit-table-riwayatdiklatpegawai').dataTable().fnDestroy();
+      // $('#nama_pegawai').val(nama);
+      // $('#nip_pegawai').val(nip);
+      getTableRiwayatDiklat(id);
+    }
+
+    function getDataPegawai(id){
+      $.ajax({
+        url: "{{ url('api/datapegawai') }}" + '/' + id,
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          $('#modal-form-riwayatdiklat').modal('show');
+          $('.modal-title').text('Riwayat Diklat Pegawai');
+          $('#nama_pegawai').text(data.data[0].nama);
+          $('#nip_pegawai').text(data.data[0].nip);
+          console.log(data.data[0].nama);
+          console.log(id);
+        },
+        error : function() {
+            alert("Data tidak ditemukan!");
+        }
+      });
+    }
+
+    function getTableRiwayatDiklat(id){
+      var table = $('#unit-table-riwayatdiklatpegawai').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ route('api.riwayatdiklatpegawai')  }}/" + id,
+          columns: [
+            {data: 'id', name: 'id'},
+            {data: 'nama_diklat', name: 'nama_diklat'},
+            {data: 'tgl_sertifikat', name: 'tgl_sertifikat'},
+            {data: 'no_sertifikat', name: 'no_sertifikat'},
+            {data: 'peran', name: 'peran'},
+            //{data: 'action', name: 'action', orderable: false, searchable: false}
+          ],
+          rowCallback: function( row, data, index ) {
+            var info = table.page.info();
+            var page = info.page;
+            var length = info.length;
+            var num = page * length + (index + 1);
+            $('td:eq(0)', row).html( num );
+          }
+      });
+    }
 
 </script>
 @endpush

@@ -12,9 +12,13 @@ use App\Unit;
 use App\RiwayatPendidikan;
 use App\Jenjang;
 use App\Pangkat;
+use App\Eselon;
 use App\Jabatan;
 use App\JenisJabatan;
 use App\RiwayatJabatan;
+use App\RiwayatDiklat;
+use App\RiwayatPangkat;
+use App\RiwayatEselon;
 use App\Pegawai;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -33,7 +37,7 @@ class PegawaiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
       //$ambil_unit = $request->get('unit_id');
       $pegawai = Pegawai::all();
@@ -190,11 +194,23 @@ class PegawaiController extends Controller
         $datatables->addColumn('action', function($pegawai){
           $view = route('pegawai.view', ['id'=>$pegawai->id]);
 
-          return '<a href="'.$view.'" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-eye-open"></i> View</a> ' .
+          return '<a href="'.$view.'" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-eye-open"></i> Profil</a> ' .
           // '<a onclick="editForm('. $pegawai->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
           '<a onclick="deleteData('. $pegawai->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
         });
         return $datatables->make(true);
+    }
+
+    public function apiDataPegawai(Request $request, $id)
+    {
+      $pegawai = DB::table('pegawais')
+                        ->select('pegawais.*')
+                        ->where('id', '=', $id)
+                        ->get();
+
+      $datatables = Datatables::of($pegawai);
+
+      return $datatables->make(true);
     }
 
     public function apiRiwayatPendidikan(Request $request, $id)
@@ -235,6 +251,25 @@ class PegawaiController extends Controller
         return $datatables->make(true);
     }
 
+    public function apiRiwayatEselon(Request $request, $id)
+    {
+        //$riwayatpangkat = RiwayatPangkat::all();
+        $riwayateselon = DB::table('riwayat_eselons')
+                          ->join('eselons', 'riwayat_eselons.eselon_id', '=', 'eselons.id')
+                          ->join('pegawais', 'riwayat_eselons.pegawai_id', '=', 'pegawais.id')
+                          ->select('riwayat_eselons.*', 'eselons.eselon', 'pegawais.nip', 'pegawais.nama')
+                          ->where('pegawai_id', '=', $id)
+                          ->get();
+
+        $datatables = Datatables::of($riwayateselon);
+
+        $datatables->addColumn('action', function($riwayateselon){
+          return '<a onclick="editFormRiwayatEselon('. $riwayateselon->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+          '<a onclick="deleteDataRiwayatEselon('. $riwayateselon->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+        });
+        return $datatables->make(true);
+    }
+
     public function apiRiwayatJabatan(Request $request, $id)
     {
       //$riwayatjabatan = RiwayatJabatan::all();
@@ -256,6 +291,24 @@ class PegawaiController extends Controller
       return $datatables->make(true);
     }
 
+    public function apiRiwayatDiklat(Request $request, $id)
+    {
+      //$riwayatjabatan = RiwayatJabatan::all();
+      $riwayatdiklat = DB::table('riwayat_diklats')
+      ->join('pegawais', 'riwayat_diklats.pegawai_id', '=', 'pegawais.id')
+      ->select('riwayat_diklats.*', DB::raw('DATE_FORMAT(tgl_sertifikat, "%m/%d/%Y") as tgl_sertifikat'), 'pegawais.nip', 'pegawais.nama')
+      ->where('pegawai_id', '=', $id)
+      ->get();
+
+      $datatables = Datatables::of($riwayatdiklat);
+
+      $datatables->addColumn('action', function($riwayatdiklat){
+        return '<a onclick="editFormRiwayatDiklat('. $riwayatdiklat->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+        '<a onclick="deleteDataRiwayatDiklat('. $riwayatdiklat->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+      });
+      return $datatables->make(true);
+    }
+
     public function viewPegawai($id)
     {
       $jeniskelamin = JenisKelamin::all();
@@ -270,6 +323,7 @@ class PegawaiController extends Controller
       $jabatan = Jabatan::all();
       $jenisjabatan = JenisJabatan::all();
       $pangkat = Pangkat::all();
+      $eselon = Eselon::all();
       $pegawaifind = Pegawai::find($id);
 
       $pegawai = DB::select(DB::raw(
@@ -300,11 +354,189 @@ class PegawaiController extends Controller
         'jeniskelamin' => $jeniskelamin,
         'jenisjabatan' => $jenisjabatan,
         'pangkat' => $pangkat,
+        'eselon' => $eselon,
         'pegawai'=> $pegawai,
         'pegawaifind' => $pegawaifind,
         'id' => $id,
       ]);
 
+    }
 
+    public function apiDiklatPIM2(Request $request)
+    {
+        //$riwayatdiklat = RiwayatDiklat::all();
+        $riwayatdiklat = DB::table('pegawais')
+                          ->join('pegawais', 'riwayat_diklats.pegawai_id', '=', 'pegawais.id')
+                          ->select('riwayat_diklats.*', DB::raw('DATE_FORMAT(tgl_sertifikat, "%m/%d/%Y") as tgl_sertifikat'), 'pegawais.nip', 'pegawais.nama')
+                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat II ('.'%')
+                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat III'.'%')
+                          // ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat IV'.'%')
+                          ->get();
+
+        $datatables = Datatables::of($riwayatdiklat);
+
+        $datatables->addColumn('action', function($riwayatdiklat){
+          return '<a onclick="editForm('. $riwayatdiklat->id .')" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+          '<a onclick="deleteData('. $riwayatdiklat->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a> ';
+        });
+        return $datatables->make(true);
+    }
+
+    public function apiUsulanDiklatPim4(Request $request)
+    {
+        //$riwayatdiklat = RiwayatDiklat::all();
+        $pegawai_exclude = DB::table('pegawais')
+                          ->join('riwayat_diklats', 'pegawais.id', '=', 'riwayat_diklats.pegawai_id')
+                          // ->join('riwayat_pendidikans', 'pegawais.id', '=', 'riwayat_pendidikans.pegawai_id')
+                          // ->join('riwayat_jabatans', 'pegawais.id', '=', 'riwayat_jabatans.pegawai_id')
+                          // ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
+                          // ->join('pangkats', 'riwayat_jabatans.pangkat_id', '=', 'pangkats.id')
+                          // ->join('jenjangs', 'riwayat_pendidikans.jenjang_id', '=', 'jenjangs.id')
+                          ->select('pegawais.id')
+                          // ->where('riwayat_pendidikans.jenjang_id', '<', 6)
+                          // ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                          // ->where('riwayat_jabatans.jenis_jabatan_id', '=', 1)
+                          // ->orWhere('riwayat_jabatans.jenis_jabatan_id', '=', 3)
+                          ->where('riwayat_diklats.nama_diklat', 'like', '%'.'PIM Tingkat II'.'%')
+                          ->orWhere('riwayat_diklats.nama_diklat', 'like', '%'.'PIM Tingkat III'.'%')
+                          ->orWhere('riwayat_diklats.nama_diklat', 'like', '%'.'PIM Tingkat IV'.'%')
+                          ->distinct()
+                          ->get();
+
+        $index_p = [];
+        foreach ($pegawai_exclude as $value) {
+          array_push($index_p, $value->id);
+        }
+
+        // dd($index_p);
+        // die();
+
+        $a = DB::table('pegawais')
+                          ->select('pegawais.id')
+                          ->whereNotIn('pegawais.id', $index_p)
+                          ->get();
+
+        $index_p1 = [];
+        foreach ($a as $value) {
+          array_push($index_p1, $value->id);
+        }
+
+        // dd($index_p1);
+        // die();
+
+        $pegawai = DB::table('pegawais')
+                          // ->join('riwayat_diklats', 'pegawais.id', '=', 'riwayat_diklats.pegawai_id')
+                          ->join('riwayat_jabatans', 'pegawais.id', '=', 'riwayat_jabatans.pegawai_id')
+                          ->join('riwayat_pendidikans', 'pegawais.id', '=', 'riwayat_pendidikans.pegawai_id')
+                          ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
+                          ->join('pangkats', 'riwayat_jabatans.pangkat_id', '=', 'pangkats.id')
+                          ->join('jenjangs', 'riwayat_pendidikans.jenjang_id', '=', 'jenjangs.id')
+                          // ->join('riwayat_eselons', 'pegawais.id', '=', 'riwayat_eselons.pegawai_id')
+                          // ->join('eselons', 'riwayat_eselons.eselon_id', '=', 'eselons.id')
+                          // ->select('pegawais.*', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang', 'jenis_jabatans.jenis_jabatan', 'riwayat_jabatans.jabatan')
+                          // ->select('pegawais.*', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang')
+                          ->select('pegawais.id')
+                          // ->select('pegawais.nama', 'riwayat_jabatans.jabatan', 'pangkats.pangkat', 'jenjangs.nama_jenjang')
+                          ->whereIn('pegawais.id', $index_p1)
+                          // ->where(function($query){
+                            //$query
+                                  ->where('riwayat_jabatans.jenis_jabatan_id', '=', 1)
+                                  //->where('riwayat_jabatans.pangkat_id', '<', 9)
+                                  //->where('riwayat_pendidikans.jenjang_id', '<', 6)
+                                  ->orWhere('riwayat_jabatans.jenis_jabatan_id', '=', 3)
+                                  // ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                          // })
+                          ->distinct()
+                          ->get();
+
+        $index_p2 = [];
+        foreach ($pegawai as $value) {
+          array_push($index_p2, $value->id);
+        }
+
+        // dd($index_p2);
+        // die();
+
+        $pegawaii = DB::table('pegawais')
+                          // ->join('riwayat_diklats', 'pegawais.id', '=', 'riwayat_diklats.pegawai_id')
+                          ->join('riwayat_jabatans', 'pegawais.id', '=', 'riwayat_jabatans.pegawai_id')
+                          ->join('riwayat_pendidikans', 'pegawais.id', '=', 'riwayat_pendidikans.pegawai_id')
+                          ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
+                          ->join('pangkats', 'riwayat_jabatans.pangkat_id', '=', 'pangkats.id')
+                          ->join('jenjangs', 'riwayat_pendidikans.jenjang_id', '=', 'jenjangs.id')
+                          // ->join('riwayat_eselons', 'pegawais.id', '=', 'riwayat_eselons.pegawai_id')
+                          // ->join('eselons', 'riwayat_eselons.eselon_id', '=', 'eselons.id')
+                          ->join('units', 'pegawais.unit_id', '=', 'units.id')
+                          ->select('pegawais.*', 'units.kode_unit', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang', 'jenis_jabatans.jenis_jabatan', 'riwayat_jabatans.jabatan')
+                          // ->select('pegawais.*', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang')
+                          // ->select('pegawais.nama', 'riwayat_jabatans.jabatan', 'pangkats.pangkat', 'jenjangs.nama_jenjang')
+                          ->whereIn('pegawais.id', $index_p2)
+                          // ->where(function($query){
+                            //$query
+                                  // ->where('riwayat_jabatans.jenis_jabatan_id', '=', 1)
+                                  ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                                  ->where('riwayat_pendidikans.jenjang_id', '<', 6)
+                                  // ->orWhere('riwayat_jabatans.jenis_jabatan_id', '=', 3)
+                                  // ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                          // })
+                          ->distinct()
+                          ->get();
+
+        // dd($index_p1);
+        // die();
+
+        $datatables = Datatables::of($pegawaii);
+
+        return $datatables->make(true);
+    }
+
+    public function apiUsulanDiklatPim2(Request $request)
+    {
+        //$riwayatdiklat = RiwayatDiklat::all();
+        $pegawai = DB::table('pegawais')
+                          ->join('riwayat_diklats', 'pegawais.id', '=', 'riwayat_diklats.pegawai_id')
+                          ->join('riwayat_pendidikans', 'pegawais.id', '=', 'riwayat_pendidikans.pegawai_id')
+                          ->join('riwayat_jabatans', 'pegawais.id', '=', 'riwayat_jabatans.pegawai_id')
+                          ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
+                          ->join('pangkats', 'riwayat_jabatans.pangkat_id', '=', 'pangkats.id')
+                          ->join('jenjangs', 'riwayat_pendidikans.jenjang_id', '=', 'jenjangs.id')
+                          ->select('pegawais.*', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang', 'jenis_jabatans.jenis_jabatan')
+                          ->where('riwayat_pendidikans.jenjang_id', '<', 6)
+                          ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                          ->where('riwayat_jabatans.jenis_jabatan_id', '=', 1)
+                          ->orWhere('riwayat_jabatans.jenis_jabatan_id', '=', 3)
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat II ('.'%')
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat III'.'%')
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat IV'.'%')
+                          ->get();
+
+        $datatables = Datatables::of($pegawai);
+
+        return $datatables->make(true);
+    }
+
+    public function apiUsulanDiklatPim3(Request $request)
+    {
+        //$riwayatdiklat = RiwayatDiklat::all();
+        $pegawai = DB::table('pegawais')
+                          ->join('riwayat_diklats', 'pegawais.id', '=', 'riwayat_diklats.pegawai_id')
+                          ->join('riwayat_pendidikans', 'pegawais.id', '=', 'riwayat_pendidikans.pegawai_id')
+                          ->join('riwayat_jabatans', 'pegawais.id', '=', 'riwayat_jabatans.pegawai_id')
+                          ->join('jenis_jabatans', 'riwayat_jabatans.jenis_jabatan_id', '=', 'jenis_jabatans.id')
+                          ->join('pangkats', 'riwayat_jabatans.pangkat_id', '=', 'pangkats.id')
+                          ->join('jenjangs', 'riwayat_pendidikans.jenjang_id', '=', 'jenjangs.id')
+                          ->select('pegawais.*', 'pangkats.nama_pangkat', 'jenjangs.nama_jenjang', 'jenis_jabatans.jenis_jabatan')
+                          ->where('riwayat_pendidikans.jenjang_id', '<', 6)
+                          ->where('riwayat_jabatans.pangkat_id', '<', 9)
+                          ->where('riwayat_jabatans.jenis_jabatan_id', '=', 1)
+                          ->orWhere('riwayat_jabatans.jenis_jabatan_id', '=', 3)
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat II ('.'%')
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat III'.'%')
+                          ->where('riwayat_diklats.nama_diklat', 'not like', '%'.'PIM Tingkat IV'.'%')
+                          ->get();
+
+        $datatables = Datatables::of($pegawai);
+
+        return $datatables->make(true);
     }
 }
